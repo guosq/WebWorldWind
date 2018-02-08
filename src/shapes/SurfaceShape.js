@@ -421,7 +421,8 @@ define([
                 shape.sector.maxLatitude + "," +
                 shape.sector.minLongitude + "," +
                 shape.sector.maxLongitude +
-                "]";
+                "]" +
+                " lo " + shape.layer.opacity;
         };
 
         SurfaceShape.prototype.computeStateKey = function () {
@@ -471,8 +472,12 @@ define([
          * @protected
          */
         SurfaceShape.prototype.isShapeDataCurrent = function (dc, shapeData) {
+            var opacityChanged = shapeData.layerOpacity !== dc.currentLayer.opacity;
+            if (opacityChanged) {
+                this.stateKeyInvalid = true
+            }
             return shapeData.verticalExaggeration === dc.verticalExaggeration
-                && shapeData.expiryTime > Date.now();
+                && shapeData.expiryTime > Date.now() && opacityChanged;
         };
 
         /**
@@ -519,6 +524,7 @@ define([
             if (this.currentData.isExpired || !this.currentData.extent) {
                 this.computeExtent(dc);
                 this.currentData.verticalExaggeration = dc.verticalExaggeration;
+                this.currentData.opacity = dc.currentLayer.opacity;
                 this.resetExpiration(this.currentData);
             }
 
