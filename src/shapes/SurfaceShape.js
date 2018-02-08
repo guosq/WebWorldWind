@@ -472,12 +472,12 @@ define([
          * @protected
          */
         SurfaceShape.prototype.isShapeDataCurrent = function (dc, shapeData) {
-            var opacityChanged = shapeData.layerOpacity !== dc.currentLayer.opacity;
-            if (opacityChanged) {
+            var isSameOpacity = shapeData.layerOpacity === dc.currentLayer.opacity;
+            if (!isSameOpacity) {
                 this.stateKeyInvalid = true
             }
             return shapeData.verticalExaggeration === dc.verticalExaggeration
-                && shapeData.expiryTime > Date.now() && opacityChanged;
+                && shapeData.expiryTime > Date.now() && isSameOpacity;
         };
 
         /**
@@ -524,7 +524,7 @@ define([
             if (this.currentData.isExpired || !this.currentData.extent) {
                 this.computeExtent(dc);
                 this.currentData.verticalExaggeration = dc.verticalExaggeration;
-                this.currentData.opacity = dc.currentLayer.opacity;
+                this.currentData.layerOpacity = dc.currentLayer.opacity;
                 this.resetExpiration(this.currentData);
             }
 
